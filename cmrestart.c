@@ -1,4 +1,8 @@
 #include <stdio.h>
+#include <strings.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
@@ -22,11 +26,30 @@ int count;
 int failures = 0;
 static int exitval = 0;
 static int quiet = 0;
-int main(int argc, char **argv[]) {
-    if ( argc < 2) {
-        printf("Missing CM IP\nUSAGE: %s <CM_IP>\n", argv[0]);
-        exit(1);
+void help(void);
+
+void help(void) {
+    printf("Missing CM IP\nUSAGE: cmrestart <CM_IP>\n");
+    exit(1);
+}
+int main(int argc, char **argv) {
+    int hflag = 0;
+    char *cvalue = NULL;
+    int index;
+    int c;
+    opterr = 0;
+    while ((c = getopt (argc, argv, "h:")) != -1)
+        switch (c) {
+            case 'h':
+                hflag=1;
+                break;
+            default:
+                help();
+        }
+    if ( argc < 2 || hflag == 1) {
+        help();
     }
+
     init_snmp("snmpapp");
     snmp_sess_init( &session );
     session.peername = (char*) argv[1];
