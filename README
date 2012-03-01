@@ -1,0 +1,9 @@
+I work a lot with DOCSIS cable modems. You often need to get
+cable modem SW version, restart it, force SW upgrade.
+Those tools allows mi to make this task via command line.
+I had version written in python but C version is easier and faster on 
+small old computers I usually use like ARM based IomegaConnect 
+changed to small server :)
+
+
+
