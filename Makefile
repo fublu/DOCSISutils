@@ -2,7 +2,7 @@ CC=gcc
 
 OBJS1=cmversion.o
 OBJS2=cmrestart.o
-TARGETS=cmversion
+TARGETS=cmversion cmrestart
 
 CFLAGS=-I. `net-snmp-config --cflags`
 BUILDLIBS=`net-snmp-config --libs`
@@ -16,6 +16,10 @@ all: $(TARGETS)
 
 cmversion: $(OBJS1)
 	$(CC) -o cmversion $(OBJS1) $(BUILDLIBS)
+
+cmrestart: $(OBJS2)
+	$(CC) -o cmrestart $(OBJS2) $(BUILDLIBS)
+
 clean:
 	rm $(OBJS1) $(TARGETS)
 install:
