@@ -9,7 +9,8 @@
 
 /* cmversion (c): Marcin Jurczuk <marcin@jurczuk.eu>
  * simple hack of snmpset rewriten to use SNMP_2c
- * just to set reset OID on CM. Very usefull tool for daily work
+ * just to set reset OID on CM, and reset it. 
+ * Very usefull tool for daily work
  */
 #define COMMUNITY "public"
 #define RESETOID ".1.3.6.1.2.1.69.1.1.3.0"

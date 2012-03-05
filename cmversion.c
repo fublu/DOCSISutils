@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
-
+#include <string.h>
 
 /* cmversion (c): Marcin Jurczuk <marcin@jurczuk.eu>
  * simple hack of snmpdemo rewriten to use SNMP_2c
@@ -13,17 +13,22 @@ struct snmp_pdu *pdu;
 struct snmp_pdu *response;
 oid anOID[MAX_OID_LEN];
 size_t anOID_len = MAX_OID_LEN;
-               
 struct variable_list *vars;
 int status;
-int main(int argc, char **argv[]) {
+char cm[64];
+int main(int argc, char **argv) {
     if ( argc < 2) {
+        fgets(cm,sizeof cm,stdin);
+        if(strlen(cm) < 2) { 
         printf("Missing CM IP\nUSAGE: %s <CM_IP>\n", argv[0]);
         exit(1);
+        }
+    } else {
+        strncpy(cm,argv[1],sizeof cm);
     }
     init_snmp("snmpapp");
     snmp_sess_init( &session );
-    session.peername = (char*) argv[1];
+    session.peername = cm;
     session.version=SNMP_VERSION_2c;
     session.community="public";
     session.community_len = strlen(session.community);
