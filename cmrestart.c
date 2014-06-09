@@ -9,7 +9,7 @@
 
 /* cmversion (c): Marcin Jurczuk <marcin@jurczuk.eu>
  * simple hack of snmpset rewriten to use SNMP_2c
- * just to set reset OID on CM, and reset it. 
+ * just to set reset OID on CM, and reset it.
  * Very usefull tool for daily work
  */
 #define COMMUNITY "public"
@@ -35,8 +35,8 @@ void help(void) {
 }
 int main(int argc, char **argv) {
     int hflag = 0;
-    char *cvalue = NULL;
-    int index;
+    //char *cvalue = NULL;
+  //  int index;
     int c;
     opterr = 0;
     while ((c = getopt (argc, argv, "h:")) != -1)
@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
     snmp_sess_init( &session );
     session.peername = (char*) argv[1];
     session.version=SNMP_VERSION_2c;
-    session.community=COMMUNITY;
-    session.community_len = strlen(session.community);
+    session.community=(unsigned char  * ) COMMUNITY;
+    session.community_len = strlen((const char * ) session.community);
     /*
      * create PDU for SET request and add object names and values to request
      */
@@ -70,16 +70,18 @@ int main(int argc, char **argv) {
     if (failures) {
         snmp_close(ss);
         SOCK_CLEANUP;
+        if (pdu)
+            snmp_free_pdu(pdu);
         exit(1);
     }
 
-    ss = snmp_open(&session); 
+    ss = snmp_open(&session);
     if (!ss) {
        snmp_perror("ack");
        snmp_log(LOG_ERR, "Unable to open snmp session!!\n");
        exit(2);
    }
-    
+
       status = snmp_synch_response(ss, pdu, &response);
     if (status == STAT_SUCCESS) {
         if (response->errstat == SNMP_ERR_NOERROR) {
@@ -126,9 +128,11 @@ int main(int argc, char **argv) {
 
     if (response)
         snmp_free_pdu(response);
+    if(pdu)
+        snmp_free_pdu(pdu);
     snmp_close(ss);
+    //snmp_free_var(vars);
     SOCK_CLEANUP;
-  
     return exitval;
 
 }

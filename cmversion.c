@@ -15,14 +15,20 @@ oid anOID[MAX_OID_LEN];
 size_t anOID_len = MAX_OID_LEN;
 struct variable_list *vars;
 int status;
-char cm[64];
+char cm[16];
+char *ip;
 int main(int argc, char **argv) {
     if ( argc < 2) {
-        fgets(cm,sizeof cm,stdin);
-        if(strlen(cm) < 2) { 
+        ip = fgets(cm,sizeof cm,stdin);
+        // remove \n
+        cm[strlen(cm)-1] = '\0';
+        //fprintf(stdout, "IP length: %li\n", strlen(cm) );
+        if(strlen(cm)< 2) {
         printf("Missing CM IP\nUSAGE: %s <CM_IP>\n", argv[0]);
         exit(1);
-        }
+        } else {
+          printf("Using %s IP\n",ip);
+}
     } else {
         strncpy(cm,argv[1],sizeof cm);
     }
@@ -30,15 +36,15 @@ int main(int argc, char **argv) {
     snmp_sess_init( &session );
     session.peername = cm;
     session.version=SNMP_VERSION_2c;
-    session.community="public";
-    session.community_len = strlen(session.community);
-    ss = snmp_open(&session); 
+    session.community=(unsigned char *) "public";
+    session.community_len = strlen((const char *) session.community);
+    ss = snmp_open(&session);
     if (!ss) {
        snmp_perror("ack");
        snmp_log(LOG_ERR, "Unable to open snmp session!!\n");
        exit(2);
    }
-    
+
     pdu = snmp_pdu_create(SNMP_MSG_GET);
     read_objid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len);
     snmp_add_null_var(pdu, anOID, anOID_len);
@@ -67,21 +73,21 @@ int main(int argc, char **argv) {
      /*
       * FAILURE: print what went wrong!
       */
-    
+
      if (status == STAT_SUCCESS)
        fprintf(stderr, "Error in packet\nReason: %s\n",
                snmp_errstring(response->errstat));
      else
        snmp_sess_perror("snmpget", ss);
-    
+
    }
    if (response)
      snmp_free_pdu(response);
    snmp_close(ss);
-    
+
    /* windows32 specific cleanup (is a noop on unix) */
    SOCK_CLEANUP;
 
-
+   return EXIT_SUCCESS;
 
 }

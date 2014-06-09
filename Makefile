@@ -4,7 +4,7 @@ OBJS1=cmversion.o
 OBJS2=cmrestart.o
 TARGETS=cmversion cmrestart
 
-CFLAGS=-I. `net-snmp-config --cflags`
+CFLAGS=-I. `net-snmp-config --cflags` -Wall -g
 BUILDLIBS=`net-snmp-config --libs`
 BUILDAGENTLIBS=`net-snmp-config --agent-libs`
 
